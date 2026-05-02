@@ -1,0 +1,10 @@
+version: 2
+project_name: task-cli
+builds:
+  - env: [CGO_ENABLED=0] # Safe because of modernc.org/sqlite
+    goos: [linux, windows, darwin]
+    goarch: [amd64, arm64]
+    main: ./main.go
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
