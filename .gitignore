@@ -528,9 +528,15 @@ MigrationBackup/
 
 # Custom - eric6166
 
+#!plans/plan.md
+#!plans/prd.md
+#!plans/require.md
+
+
 .claude/*
+plans/
 !plans/templates/
-plans
+
 eric6166/
 docs/journals/
 task-cli
