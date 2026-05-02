@@ -265,7 +265,7 @@ echo "Total tasks: $(task-cli task list | tail -n +2 | wc -l)"
 
 ### Prerequisites
 
-- Go 1.22.2 or later
+- Go 1.22+ or later
 - No CGO required (pure Go SQLite)
 
 ### Building
@@ -277,6 +277,45 @@ go build -o task-cli main.go
 # Cross-platform (requires GoReleaser)
 goreleaser release --snapshot
 ```
+
+### Development Setup
+
+For local development and testing, use the development scripts to build and install task-cli from source:
+
+**Linux/macOS:**
+
+1. **Build and install task-cli from source:**
+   ```bash
+   ./scripts/install-dev.sh
+   ```
+   - Checks Go 1.22+ is installed
+   - Builds task-cli from source
+   - Installs to `/usr/local/bin/task-cli`
+   - Verifies installation
+
+2. **Install hello plugin for testing:**
+   ```bash
+   ./scripts/install-hello-plugin-dev.sh
+   ```
+   - Installs example hello plugin
+   - Demonstrates plugin system
+   - Run with: `task-cli hello`
+
+3. **Clean uninstall for development:**
+   ```bash
+   ./scripts/uninstall-dev.sh
+   ```
+   - Removes task-cli binary
+   - Removes all plugins
+   - Removes data directory (`~/.task-cli/`)
+   - Removes config file (`~/.task-cli.yaml`)
+
+**Platform Support**: macOS, Linux, Windows WSL
+
+**Difference from Production Scripts:**
+- `-dev` scripts build from source (requires Go)
+- Production `install.sh` downloads pre-built releases
+- Development scripts useful for testing changes before release
 
 ### Project Structure
 

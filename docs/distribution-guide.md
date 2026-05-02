@@ -20,6 +20,133 @@ curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main
 irm https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/install-windows.ps1 | iex
 ```
 
+## Development Setup
+
+Development scripts build task-cli from source for local testing and plugin development. Use these for iterating on changes before release.
+
+### Prerequisites
+
+- Go 1.22+
+- Bash shell (Linux, macOS, or Windows WSL Ubuntu)
+- `sudo` command available
+
+### Development Scripts
+
+| Script | Purpose | Use When |
+|--------|---------|----------|
+| `scripts/install-dev.sh` | Build from source and install | Testing changes, local development |
+| `scripts/install-hello-plugin-dev.sh` | Install hello example plugin | Testing plugin system |
+| `scripts/uninstall-dev.sh` | Clean uninstall of all task-cli files | Reset development environment |
+
+### install-dev.sh
+
+**Purpose**: Build task-cli from source and install to /usr/local/bin
+
+**Behavior**:
+1. Checks Go 1.22+ installed
+2. Builds binary: `go build -o task-cli main.go`
+3. Installs to `/usr/local/bin/task-cli`
+4. Sets executable permissions
+5. Verifies installation runs successfully
+
+**Usage**:
+```bash
+./scripts/install-dev.sh
+```
+
+**Idempotent**: Checks if already installed, skips rebuild if present.
+
+### install-hello-plugin-dev.sh
+
+**Purpose**: Install hello world plugin for testing the plugin system
+
+**Plugin Details**:
+- Source: `task-cli-hello-dev` (bash script in repository root)
+- Installed to: `/usr/local/bin/task-cli-hello`
+- Output: "Hello from the plugin!"
+
+**Behavior**:
+1. Validates `task-cli-hello-dev` exists and is executable
+2. Copies to `/usr/local/bin/task-cli-hello`
+3. Sets executable permissions
+4. Verifies installation
+
+**Usage**:
+```bash
+./scripts/install-hello-plugin-dev.sh
+
+# Test the plugin
+task-cli hello
+# Output: Hello from the plugin!
+```
+
+**Purpose of Hello Plugin**: Demonstrates how to:
+- Create executable plugins with `task-cli-{name}` pattern
+- Register plugins discoverable by kubectl-style command routing
+- Test plugin discovery and invocation before publishing custom plugins
+
+### uninstall-dev.sh
+
+**Purpose**: Clean development environment by removing all task-cli files
+
+**Removal Steps**:
+1. Removes `/usr/local/bin/task-cli` binary
+2. Removes all plugins: `/usr/local/bin/task-cli-*`
+3. Removes data directory: `~/.task-cli/`
+4. Removes config file: `~/.task-cli.yaml`
+5. Verifies complete removal
+
+**Usage**:
+```bash
+./scripts/uninstall-dev.sh
+```
+
+**Idempotent**: Warns if files already removed, continues safely.
+
+**Note**: Removes all task-cli data and configuration. Use when resetting environment between tests.
+
+### Development Workflow
+
+```bash
+# 1. Initial setup - build and install
+./scripts/install-dev.sh
+
+# 2. Test basic functionality
+task-cli task add "Test task"
+task-cli task list
+
+# 3. Install and test plugin system
+./scripts/install-hello-plugin-dev.sh
+task-cli hello
+
+# 4. Make code changes in your editor
+# (edit source files)
+
+# 5. Rebuild and test
+./scripts/install-dev.sh  # Rebuilds from source
+
+# 6. Clean up when done
+./scripts/uninstall-dev.sh
+```
+
+### Development vs. Production Scripts
+
+**Development Scripts** (`-dev` suffix):
+- Require Go toolchain installed locally
+- Build from source (slower, ~5-10 seconds)
+- Useful for testing changes immediately
+- Allow rapid iteration on code changes
+
+**Production Scripts** (no suffix):
+- Download pre-built binaries from releases
+- Work on any system (no Go required)
+- Fast installation (~2-5 seconds)
+- Used by end-users
+
+**When to Use Each**:
+- **Development scripts**: Local feature development, bug fixes, testing plugin system
+- **Production scripts**: End-user installation, CI/CD pipelines, distribution testing
+
 ## Build Configuration (GoReleaser)
 
 ### Configuration File: `.goreleaser.yaml`
