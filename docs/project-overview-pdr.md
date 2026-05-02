@@ -179,26 +179,30 @@ Non-privileged operation (no `sudo`), respects user-level data isolation, works 
 
 ## Version & Compatibility
 
-- **Go Version**: 1.22.2 or later
-- **Module**: task-cli v0.1.0 (initial release)
-- **Dependencies**: Cobra, Viper, modernc.org/sqlite (see go.mod)
-- **Breaking Changes**: None (initial release)
+- **Go Version**: 1.22.2 or later (minimum required)
+- **Module**: task-cli
+- **Dependencies**: Cobra (CLI), Viper (config), modernc.org/sqlite (database)
+- **Transitive Dependencies**: 16 total (see go.sum)
+- **Platform Support**: Linux, Windows, Darwin (both amd64 and arm64)
 
 ## Deployment & Distribution
 
 - **Build Tool**: GoReleaser v2
-- **Artifacts**: Tarball archives per platform/arch
-- **Installation**: Download binary, add to PATH, run directly
-- **Configuration**: Optional YAML file, environment variables, command flags
-- **Testing**: Manual CLI testing on all platforms (automated tests deferred)
+- **Artifacts**: Tarball archives per platform/arch (8 combinations)
+- **Installation**: Via install.sh script or manual binary download
+- **Installation Removal**: Via uninstall.sh script (removes binary, plugins, data, config)
+- **Configuration**: Optional YAML file at ~/.task-cli.yaml, environment variables, command flags
+- **Plugin Management**: Automatic plugin discovery from PATH, URL-based installation with security checks
+- **Testing**: Manual CLI testing (no automated test suite; documented in code-standards.md as known limitation)
 
 ## Project Metrics
 
-- **Codebase**: 433 lines of Go (before comments/tests)
-- **Modules**: 3 packages (cmd, database, config, task)
-- **Dependencies**: 16 external (Cobra, Viper, modernc.org/sqlite + transitive)
-- **Build Time**: ~3s cross-platform (8 combinations)
-- **Binary Size**: ~8-12MB per platform (debug symbols included)
+- **Codebase Size**: 433 lines of Go (main, cmd, internal modules)
+- **Modules**: 4 packages (cmd, database, config, task)
+- **External Dependencies**: 16 total (Cobra, Viper, modernc.org/sqlite + transitive)
+- **Database**: SQLite with single tasks table (id, name, priority, author)
+- **Build Time**: ~3s cross-platform (8 architecture combinations)
+- **Binary Size**: 8-12MB per platform (includes debug symbols)
 
 ## Rollout Plan
 

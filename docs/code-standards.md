@@ -509,25 +509,40 @@ type Task struct {
 
 ## Testing & Validation
 
-### Input Boundaries
-Test these categories:
-- **Valid input**: Normal cases (task name, ID, priority within range)
-- **Empty/nil**: Empty strings, zero values, nil pointers
-- **Invalid type**: Non-integer ID, negative priority
-- **Boundary**: ID = 0, very long name (no length limit currently)
+**Current Status**: No automated test suite. Manual CLI testing is primary validation method.
 
-### Database State
-- Verify task appears after `SaveTask()`
-- Verify `GetAllTasks()` returns all tasks
-- Verify `DeleteTask()` removes and no duplicates remain
-- Verify `UpdateTask()` modifies correct fields only
+### Manual Test Categories (see README.md for commands)
 
-### Plugin System
-- Verify HTTPS validation rejects HTTP URLs
-- Verify path traversal prevention (`..`, `/`, `\`)
-- Verify 100MB limit enforced
-- Verify executable permissions set (chmod 755)
-- Verify failed downloads cleaned up
+**Task Operations**:
+- `task add` - Normal case, priority flag, missing arguments
+- `task list` - Empty database, multiple tasks, output format
+- `task update` - Valid ID, invalid ID, priority changes only
+- `task delete` - Valid ID, invalid ID, verify removal
+
+**Input Boundaries**:
+- Valid input: Normal cases (task name, ID, priority 1-5)
+- Empty/nil: Empty task names, zero/negative IDs, missing flags
+- Invalid type: Non-integer ID, non-integer priority
+- Boundary: ID not found, very long names (no length limit)
+
+**Database State**:
+- Task persists after `SaveTask()` (verify with `task list`)
+- `GetAllTasks()` returns all tasks in correct order
+- `DeleteTask()` removes record, no duplicates remain
+- `UpdateTask()` modifies correct fields only
+
+**Plugin System**:
+- HTTPS validation rejects HTTP URLs with clear error
+- Path traversal prevention blocks `..`, `/`, `\` in plugin names
+- 100MB size limit enforced with error on exceeded size
+- Executable permissions set correctly (chmod 755)
+- Failed downloads cleanup partial files
+
+**Configuration**:
+- YAML config file loads correctly
+- Environment variables override config file
+- Command-line flags override environment variables
+- Missing config file doesn't break CLI
 
 ## Performance Considerations
 
@@ -544,14 +559,17 @@ Test these categories:
 
 ## Security Checklist
 
-- [ ] All SQL queries parameterized
-- [ ] Plugin URLs must be HTTPS only
-- [ ] Plugin names validated (no path separators)
-- [ ] Download size limits enforced
-- [ ] HTTP status checked (not silent failures)
-- [ ] Config file paths user-controllable
-- [ ] No hardcoded secrets or credentials
-- [ ] No eval/exec of untrusted input (plugins are intentionally trusted)
+- [x] All SQL queries parameterized (prevents SQL injection)
+- [x] Plugin URLs must be HTTPS only (enforced in cmd/plugin_install.go)
+- [x] Plugin names validated (no path separators: `.`, `/`, `\`)
+- [x] Download size limits enforced (100MB hard limit with io.LimitReader)
+- [x] HTTP status checked (returns error on non-200 responses)
+- [x] Config file paths user-controllable via `--config` flag
+- [x] No hardcoded secrets or credentials
+- [x] No eval/exec of untrusted input (plugins require explicit installation, not auto-executed)
+- [ ] Plugin signature verification (future enhancement)
+- [ ] Encrypted config storage (future enhancement)
+- [ ] Rate limiting on operations (future enhancement)
 
 ## Refactoring Guidelines
 

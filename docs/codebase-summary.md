@@ -258,12 +258,13 @@ goreleaser release --snapshot
 
 ## Known Issues & TODOs
 
-- **No automated tests**: All testing is manual CLI invocation
-- **No input validation**: Task name can be empty string
-- **No task filtering**: list command returns all tasks
-- **No concurrency locks**: Multiple writers may contend
-- **No connection pooling**: Single global DB instance
-- **No CLI rate limiting**: Plugin installs unlimited
+- **No automated test suite**: All testing is manual CLI invocation (documented in code-standards.md)
+- **No task name validation**: Empty strings accepted (schema allows it)
+- **No task filtering/search**: `task list` returns all records (scales to ~10k comfortably)
+- **No pagination**: `GetAllTasks()` loads entire table into memory
+- **No concurrency control**: Multiple simultaneous writes may cause lock contention (SQLite WAL mitigates)
+- **No plugin sandboxing**: Downloaded plugins run with full user privileges
+- **No built-in update mechanism**: Plugin updates require manual reinstallation
 
 ## Extension Points
 
@@ -333,14 +334,16 @@ internal/config.InitConfig()
 
 | File | Lines | Purpose |
 |------|-------|---------|
-| main.go | 17 | Entry point |
-| cmd/root.go | 54 | Root command |
-| cmd/task.go | 103 | CRUD commands |
-| cmd/plugin_install.go | 110 | Plugin installation |
-| internal/database/db.go | 50 | DB init |
-| internal/task/task.go | 66 | Business logic |
-| internal/config/config.go | 33 | Config loading |
-| **Total** | **433** | |
+| main.go | 17 | Entry point, DB initialization |
+| cmd/root.go | 54 | Root command, plugin discovery |
+| cmd/task.go | 103 | CRUD subcommands (add, list, delete, update) |
+| cmd/plugin_install.go | 110 | Plugin installation with security checks |
+| internal/database/db.go | 50 | SQLite initialization, schema creation |
+| internal/task/task.go | 66 | Task model, CRUD business logic |
+| internal/config/config.go | 33 | Viper configuration loading |
+| scripts/gen_docs.go | 14 | Cobra documentation generator |
+| **Total Code** | **416** | (cmd + internal only) |
+| **With Scripts** | **430** | (includes gen_docs.go) |
 
 ## Getting Started for Developers
 

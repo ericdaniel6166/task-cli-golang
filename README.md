@@ -46,7 +46,7 @@ task-cli --version
 
 #### From Pre-built Binaries
 
-Download the latest binary for your platform from [releases](https://github.com/your-org/task-cli-golang/releases):
+Download the latest binary for your platform from [releases](https://github.com/eric6166/task-cli-golang/releases):
 
 ```bash
 # Linux/macOS
@@ -390,6 +390,6 @@ See LICENSE file in repository.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-org/task-cli-golang/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/task-cli-golang/discussions)
+- **Issues**: [GitHub Issues](https://github.com/eric6166/task-cli-golang/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/eric6166/task-cli-golang/discussions)
 - **Contact**: Open an issue or discussion
