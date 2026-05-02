@@ -386,7 +386,7 @@ Contributions welcome! Please:
 
 ## License
 
-See [LICENSE](LICENSE.md) file in repository.
+See [LICENSE](./LICENSE) file in repository.
 
 ## Support
 
