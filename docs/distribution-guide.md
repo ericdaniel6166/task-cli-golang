@@ -175,11 +175,14 @@ irm https://raw.githubusercontent.com/.../install-windows.ps1 | iex -ArgumentLis
 ### Linux/macOS: `scripts/uninstall-linux.sh` and `scripts/uninstall-macos.sh`
 
 **Behavior**:
-1. Removes binary from installation location
-2. Removes plugin directory: `~/.task-cli/bin/`
+1. Locates binary via `command -v task-cli` (respects PATH)
+2. Removes binary with appropriate permissions (sudo if needed)
 3. Option to purge data and config (--purge flag):
-   - `~/.task-cli/tasks.db` (database)
-   - `~/.task-cli.yaml` (config file)
+   - Entire `$TASK_CLI_DATA_DIR` directory (default: `~/.task-cli/`)
+   - Config file: `~/.task-cli.yaml`
+
+**Environment Variables**:
+- `TASK_CLI_DATA_DIR` - Override default data location (default: `~/.task-cli/`)
 
 **Basic uninstall** (keep data):
 ```bash
@@ -191,23 +194,38 @@ curl -fsSL https://raw.githubusercontent.com/.../uninstall-linux.sh | bash
 curl -fsSL https://raw.githubusercontent.com/.../uninstall-linux.sh | bash -s -- --purge
 ```
 
+**With custom data directory**:
+```bash
+TASK_CLI_DATA_DIR=/custom/path bash uninstall-linux.sh --purge
+```
+
 ### Windows: `scripts/uninstall-windows.ps1`
 
 **Behavior**:
-1. Removes binary from InstallDir
-2. Removes plugin directory: `$LOCALAPPDATA\task-cli\bin\`
-3. Removes PATH entry from registry
-4. Option to purge user data (--Purge switch):
-   - `$env:LOCALAPPDATA\task-cli\tasks.db`
-   - `$env:APPDATA\task-cli\config.yaml`
+1. Locates binary via `Get-Command task-cli` (respects PATH), falls back to default `$LOCALAPPDATA\task-cli\`
+2. Removes binary file
+3. Removes installation directory if empty
+4. Removes PATH registry entry
+5. Option to purge user data (-Purge switch):
+   - Entire `$env:TASK_CLI_DATA_DIR` directory (default: `$env:USERPROFILE\.task-cli\`)
+   - Config file: `$env:USERPROFILE\.task-cli.yaml`
 
-**Basic uninstall**:
+**Environment Variables**:
+- `TASK_CLI_DATA_DIR` - Override default data location (default: `$env:USERPROFILE\.task-cli\`)
+
+**Basic uninstall** (keep data):
 ```powershell
 irm https://raw.githubusercontent.com/.../uninstall-windows.ps1 | iex
 ```
 
-**Complete removal**:
+**Complete removal** (delete all data):
 ```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/.../uninstall-windows.ps1))) -Purge
+```
+
+**With custom data directory**:
+```powershell
+$env:TASK_CLI_DATA_DIR = "C:\custom\path"
 & ([scriptblock]::Create((irm ...uninstall-windows.ps1))) -Purge
 ```
 

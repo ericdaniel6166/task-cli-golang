@@ -174,14 +174,16 @@ task-cli plugin install https://example.com/plugins/my-plugin.tar.gz my-plugin
 
 ### Environment Variables
 
-Set `TASK_CLI_DATA_DIR` to customize where tasks are stored:
+Set `TASK_CLI_DATA_DIR` to customize where tasks and plugins are stored:
 
 ```bash
 export TASK_CLI_DATA_DIR=/var/lib/task-cli
 task-cli task list
 ```
 
-Default location: `~/.task-cli/tasks.db`
+Default location: `~/.task-cli/` (contains `tasks.db` and `bin/` for plugins)
+
+**Note**: The config file is always stored in your home directory as `~/.task-cli.yaml`, separate from `TASK_CLI_DATA_DIR`.
 
 ### YAML Config File
 
@@ -410,22 +412,23 @@ irm https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/script
 Linux/macOS:
 ```bash
 # Remove binary
-sudo rm /usr/local/bin/task-cli
-# Or if installed to ~/.local/bin:
-rm ~/.local/bin/task-cli
+which task-cli  # Find binary location
+sudo rm /path/to/task-cli
 
-# Remove config and data
-rm -rf ~/.config/task-cli
-rm -rf ~/.local/share/task-cli
+# Remove config and data (if --purge used)
+rm -rf ~/.task-cli
+rm -f ~/.task-cli.yaml
 ```
 
 Windows:
 ```powershell
 # Remove binary
-Remove-Item "$env:LOCALAPPDATA\task-cli" -Recurse -Force
+$binaryPath = (Get-Command task-cli).Source
+Remove-Item $binaryPath -Force
 
-# Remove config
-Remove-Item "$env:APPDATA\task-cli" -Recurse -Force
+# Remove config and data (if -Purge used)
+Remove-Item "$env:USERPROFILE\.task-cli" -Recurse -Force
+Remove-Item "$env:USERPROFILE\.task-cli.yaml" -Force
 ```
 
 ## Contributing
