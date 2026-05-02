@@ -16,46 +16,62 @@ An educational, lightweight, and cross-platform task management CLI written in p
 
 ### Installation
 
-#### From Source with Install Script (Recommended)
+#### Quick Install (Recommended)
 
-Prerequisites: Go 1.22+ and sudo access
-
+**Linux/macOS:**
 ```bash
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/install.sh | bash
 ```
 
-The script will:
-- Check if already installed (skips rebuild if found)
-- Validate Go version (1.22+)
-- Build the binary
-- Install to `/usr/local/bin/task-cli`
-- Verify the installation
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/install-windows.ps1 | iex
+```
 
-**Note:** If `task-cli` is already at `/usr/local/bin/task-cli`, the script verifies the installation and exits without rebuilding.
+The install script will:
+- Auto-detect your OS and architecture (amd64/arm64)
+- Download the latest release from GitHub
+- Verify checksums for security
+- Install to the appropriate location
+- Set up PATH if needed
+
+#### Platform-Specific Install
+
+**Linux:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/install-linux.sh | bash
+```
+
+**macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/install-macos.sh | bash
+```
+
+**Windows:**
+```powershell
+irm https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/install-windows.ps1 | iex
+```
+
+#### From Source
+
+```bash
+go install github.com/ericdaniel6166/task-cli-golang@latest
+```
 
 #### Manual Installation
 
-```bash
-# Build from source
-go build -o task-cli main.go
-sudo mv task-cli /usr/local/bin/
-
-# Verify
-task-cli --version
-```
-
-#### From Pre-built Binaries
-
 Download the latest binary for your platform from [releases](https://github.com/ericdaniel6166/task-cli-golang/releases):
 
+**Linux/macOS:**
 ```bash
-# Linux/macOS
-tar -xzf task-cli_linux_amd64.tar.gz
-chmod +x task-cli
+# Extract and install
+tar -xzf task-cli_v*_linux_amd64.tar.gz
 sudo mv task-cli /usr/local/bin/
+```
 
-# Windows (add to PATH)
-# Extract task-cli.exe and add to your PATH
+**Windows:**
+```powershell
+# Extract task-cli.exe from the .zip file and add to your PATH
 ```
 
 ### Basic Usage
@@ -319,14 +335,36 @@ Database location: `$TASK_CLI_DATA_DIR/tasks.db` (default: `~/.task-cli/tasks.db
 
 ## Troubleshooting
 
-### Tasks not found
+### Installation Issues
+
+**Linux/macOS:**
+- **Permission denied**: Use `sudo` or install to `~/.local/bin` by setting `INSTALL_DIR=~/.local/bin` before running the install script
+- **Command not found after install**: Add install directory to PATH:
+  ```bash
+  export PATH="$PATH:/usr/local/bin"
+  # Or for ~/.local/bin:
+  export PATH="$PATH:$HOME/.local/bin"
+  ```
+- **Checksum verification failed**: Re-download, check network connection, or verify GitHub releases are accessible
+
+**Windows:**
+- **Execution policy error**: Run in PowerShell as Administrator:
+  ```powershell
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
+- **Access denied**: Run PowerShell as Administrator
+- **PATH not updated**: Restart your terminal or PowerShell session
+
+### Runtime Issues
+
+**Tasks not found:**
 Ensure `TASK_CLI_DATA_DIR` is set correctly or use the default `~/.task-cli/`:
 
 ```bash
 ls -la ~/.task-cli/tasks.db
 ```
 
-### Plugin not discovered
+**Plugin not discovered:**
 Check if the plugin is in PATH:
 
 ```bash
@@ -335,36 +373,59 @@ echo $PATH
 which task-cli-{plugin-name}
 ```
 
-### Database locked
+**Database locked:**
 SQLite uses WAL mode for concurrent access. If you see "database is locked":
 - Ensure only one instance is running
 - Wait a few seconds and retry
-- Check for stale processes: `lsof ~/.task-cli/tasks.db`
+- Check for stale processes: `lsof ~/.task-cli/tasks.db` (Linux/macOS)
 
 ## Uninstallation
 
-To safely remove task-cli and all installed plugins:
-
+**Linux:**
 ```bash
-./uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/uninstall-linux.sh | bash
+
+# Or to remove config and data:
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/uninstall-linux.sh | bash -s -- --purge
 ```
 
-The script will:
-- Remove the binary from `/usr/local/bin/task-cli`
-- Remove all installed plugins matching `/usr/local/bin/task-cli-*` pattern
-- Remove the data directory `~/.task-cli/`
-- Remove the config file `~/.task-cli.yaml`
-- Verify clean removal
-
-**Note:** Plugin removal is automatic and includes both built-in plugins (e.g., `task-cli-hello`) and any custom plugins installed via `task-cli plugin install`.
-
-Or manually:
-
+**macOS:**
 ```bash
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/uninstall-macos.sh | bash
+
+# Or to remove config and data:
+curl -fsSL https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/uninstall-macos.sh | bash -s -- --purge
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/uninstall-windows.ps1 | iex
+
+# Or to remove config and data:
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/ericdaniel6166/task-cli-golang/main/scripts/uninstall-windows.ps1))) -Purge
+```
+
+**Manual Uninstall:**
+
+Linux/macOS:
+```bash
+# Remove binary
 sudo rm /usr/local/bin/task-cli
-sudo rm /usr/local/bin/task-cli-*  # Remove all plugins
-rm -rf ~/.task-cli/
-rm ~/.task-cli.yaml
+# Or if installed to ~/.local/bin:
+rm ~/.local/bin/task-cli
+
+# Remove config and data
+rm -rf ~/.config/task-cli
+rm -rf ~/.local/share/task-cli
+```
+
+Windows:
+```powershell
+# Remove binary
+Remove-Item "$env:LOCALAPPDATA\task-cli" -Recurse -Force
+
+# Remove config
+Remove-Item "$env:APPDATA\task-cli" -Recurse -Force
 ```
 
 ## Contributing

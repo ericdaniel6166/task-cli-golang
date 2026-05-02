@@ -230,6 +230,11 @@ goreleaser release --snapshot
 - **Platforms**: linux, windows, darwin
 - **Architectures**: amd64, arm64
 - **Artifacts**: tar.gz archives per combination
+- **Checksum Verification**: SHA256 checksums included with each release
+
+### Distribution System
+
+Installation scripts in `scripts/` handle OS/architecture detection and automated installation with checksum verification. See [Distribution Guide](./distribution-guide.md) for detailed architecture, release process, and troubleshooting.
 
 ## Code Quality Characteristics
 

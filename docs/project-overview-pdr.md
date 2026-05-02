@@ -187,13 +187,15 @@ Non-privileged operation (no `sudo`), respects user-level data isolation, works 
 
 ## Deployment & Distribution
 
-- **Build Tool**: GoReleaser v2
-- **Artifacts**: Tarball archives per platform/arch (8 combinations)
-- **Installation**: Via install.sh script or manual binary download
-- **Installation Removal**: Via uninstall.sh script (removes binary, plugins, data, config)
+- **Build Tool**: GoReleaser v2 (cross-platform builds for 8 platform/architecture combinations)
+- **Artifacts**: Tarball archives (.tar.gz for Unix, .zip for Windows) with SHA256 checksums
+- **Installation**: Multi-platform scripts with auto-detection; supports custom installation directories
+- **Uninstallation**: Scripts with optional --purge flag to remove all data and configuration
 - **Configuration**: Optional YAML file at ~/.task-cli.yaml, environment variables, command flags
 - **Plugin Management**: Automatic plugin discovery from PATH, URL-based installation with security checks
 - **Testing**: Manual CLI testing (no automated test suite; documented in code-standards.md as known limitation)
+
+See [Distribution Guide](./distribution-guide.md) for architecture, build configuration, installation system details, and release procedures.
 
 ## Project Metrics
 

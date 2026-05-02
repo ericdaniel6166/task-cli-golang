@@ -1,10 +1,28 @@
 version: 2
 project_name: task-cli
+
 builds:
   - env: [CGO_ENABLED=0] # Safe because of modernc.org/sqlite
     goos: [linux, windows, darwin]
     goarch: [amd64, arm64]
     main: ./main.go
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+
 archives:
-  - format: tar.gz
-    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
