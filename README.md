@@ -386,10 +386,9 @@ Contributions welcome! Please:
 
 ## License
 
-See LICENSE file in repository.
+See [LICENSE](LICENSE.md) file in repository.
 
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/ericdaniel6166/task-cli-golang/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ericdaniel6166/task-cli-golang/discussions)
-- **Contact**: Open an issue or discussion
+- **Contact**: Open an issue
