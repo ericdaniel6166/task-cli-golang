@@ -21,8 +21,6 @@ An educational, lightweight, and cross-platform task management CLI written in p
 Prerequisites: Go 1.22+ and sudo access
 
 ```bash
-git clone https://github.com/your-org/task-cli-golang.git
-cd task-cli-golang
 ./install.sh
 ```
 
@@ -39,8 +37,6 @@ The script will:
 
 ```bash
 # Build from source
-git clone https://github.com/your-org/task-cli-golang.git
-cd task-cli-golang
 go build -o task-cli main.go
 sudo mv task-cli /usr/local/bin/
 
@@ -350,7 +346,6 @@ SQLite uses WAL mode for concurrent access. If you see "database is locked":
 To safely remove task-cli and all installed plugins:
 
 ```bash
-cd task-cli-golang
 ./uninstall.sh
 ```
 
