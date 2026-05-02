@@ -1,6 +1,6 @@
 # task-cli
 
-A lightweight, cross-platform task management CLI written in pure Go. Manage tasks directly from your terminal with full CRUD operations, a flexible plugin system, and zero external dependencies.
+An educational, lightweight, and cross-platform task management CLI written in pure Go. Manage tasks directly from your terminal with full CRUD operations, a flexible plugin system, and zero external dependencies.
 
 ## Features
 
@@ -16,6 +16,40 @@ A lightweight, cross-platform task management CLI written in pure Go. Manage tas
 
 ### Installation
 
+#### From Source with Install Script (Recommended)
+
+Prerequisites: Go 1.22+ and sudo access
+
+```bash
+git clone https://github.com/your-org/task-cli-golang.git
+cd task-cli-golang
+./install.sh
+```
+
+The script will:
+- Check if already installed (skips rebuild if found)
+- Validate Go version (1.22+)
+- Build the binary
+- Install to `/usr/local/bin/task-cli`
+- Verify the installation
+
+**Note:** If `task-cli` is already at `/usr/local/bin/task-cli`, the script verifies the installation and exits without rebuilding.
+
+#### Manual Installation
+
+```bash
+# Build from source
+git clone https://github.com/your-org/task-cli-golang.git
+cd task-cli-golang
+go build -o task-cli main.go
+sudo mv task-cli /usr/local/bin/
+
+# Verify
+task-cli --version
+```
+
+#### From Pre-built Binaries
+
 Download the latest binary for your platform from [releases](https://github.com/your-org/task-cli-golang/releases):
 
 ```bash
@@ -26,14 +60,6 @@ sudo mv task-cli /usr/local/bin/
 
 # Windows (add to PATH)
 # Extract task-cli.exe and add to your PATH
-```
-
-Or build from source:
-
-```bash
-git clone https://github.com/your-org/task-cli-golang.git
-cd task-cli-golang
-go build -o task-cli main.go
 ```
 
 ### Basic Usage
@@ -180,11 +206,31 @@ Extend task-cli with custom commands using the kubectl plugin pattern.
 
 ### Installation
 
-```bash
-# From URL
-task-cli plugin install https://example.com/my-plugin.tar.gz my-plugin
+#### Hello Plugin (Example)
 
-# Manual
+The repository includes `task-cli-hello`, a simple example plugin demonstrating the plugin system. Install it with:
+
+```bash
+./install-hello-plugin.sh
+```
+
+The script will:
+- Verify prerequisites (sudo access, source file exists and is executable)
+- Install to `/usr/local/bin/task-cli-hello`
+- Set executable permissions
+- Verify the installation
+
+**Note:** `task-cli-hello` is intentionally committed as an example plugin to demonstrate the plugin architecture.
+
+#### From URL
+
+```bash
+task-cli plugin install https://example.com/my-plugin.tar.gz my-plugin
+```
+
+#### Manual Installation
+
+```bash
 chmod +x my-plugin
 mkdir -p ~/.task-cli/bin
 mv my-plugin ~/.task-cli/bin/task-cli-my-plugin
@@ -298,6 +344,33 @@ SQLite uses WAL mode for concurrent access. If you see "database is locked":
 - Ensure only one instance is running
 - Wait a few seconds and retry
 - Check for stale processes: `lsof ~/.task-cli/tasks.db`
+
+## Uninstallation
+
+To safely remove task-cli and all installed plugins:
+
+```bash
+cd task-cli-golang
+./uninstall.sh
+```
+
+The script will:
+- Remove the binary from `/usr/local/bin/task-cli`
+- Remove all installed plugins matching `/usr/local/bin/task-cli-*` pattern
+- Remove the data directory `~/.task-cli/`
+- Remove the config file `~/.task-cli.yaml`
+- Verify clean removal
+
+**Note:** Plugin removal is automatic and includes both built-in plugins (e.g., `task-cli-hello`) and any custom plugins installed via `task-cli plugin install`.
+
+Or manually:
+
+```bash
+sudo rm /usr/local/bin/task-cli
+sudo rm /usr/local/bin/task-cli-*  # Remove all plugins
+rm -rf ~/.task-cli/
+rm ~/.task-cli.yaml
+```
 
 ## Contributing
 
