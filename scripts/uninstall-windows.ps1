@@ -8,39 +8,52 @@ $ErrorActionPreference = "Stop"
 
 $BinaryName = "task-cli"
 $InstallDir = "$env:LOCALAPPDATA\task-cli"
-$ConfigDir = "$env:APPDATA\task-cli"
+$DataDir = if ($env:TASK_CLI_DATA_DIR) { $env:TASK_CLI_DATA_DIR } else { "$env:USERPROFILE\.task-cli" }
+$ConfigFile = "$env:USERPROFILE\.task-cli.yaml"
 
 function Uninstall-TaskCli {
-    # Remove binary
-    $binaryPath = Join-Path $InstallDir "$BinaryName.exe"
+    # Find binary location
+    $binaryPath = (Get-Command $BinaryName -ErrorAction SilentlyContinue).Source
+
+    if (-not $binaryPath) {
+        # Fallback to default install location
+        $binaryPath = Join-Path $InstallDir "$BinaryName.exe"
+    }
 
     if (Test-Path $binaryPath) {
         Write-Host "Removing $binaryPath..."
         Remove-Item -Path $binaryPath -Force
-    }
 
-    # Remove install directory if empty
-    if ((Test-Path $InstallDir) -and ((Get-ChildItem $InstallDir).Count -eq 0)) {
-        Remove-Item -Path $InstallDir -Force
+        # Remove install directory if empty
+        $binaryDir = Split-Path $binaryPath -Parent
+        if ((Test-Path $binaryDir) -and ((Get-ChildItem $binaryDir).Count -eq 0)) {
+            Remove-Item -Path $binaryDir -Force
+        }
+    }
+    else {
+        Write-Host "$BinaryName not found (already removed?)"
     }
 
     # Remove from PATH
-    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    if ($userPath -like "*$InstallDir*") {
-        Write-Host "Removing from PATH..."
-        $newPath = ($userPath -split ';' | Where-Object { $_ -ne $InstallDir }) -join ';'
-        [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+    if ($binaryPath) {
+        $binaryDir = Split-Path $binaryPath -Parent
+        $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+        if ($userPath -like "*$binaryDir*") {
+            Write-Host "Removing from PATH..."
+            $newPath = ($userPath -split ';' | Where-Object { $_ -ne $binaryDir }) -join ';'
+            [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+        }
     }
 
     Write-Host "Binary removed."
 
     if ($Purge) {
         Write-Host "Removing config and data..."
-        if (Test-Path $ConfigDir) {
-            Remove-Item -Path $ConfigDir -Recurse -Force
+        if (Test-Path $DataDir) {
+            Remove-Item -Path $DataDir -Recurse -Force
         }
-        if (Test-Path $InstallDir) {
-            Remove-Item -Path $InstallDir -Recurse -Force
+        if (Test-Path $ConfigFile) {
+            Remove-Item -Path $ConfigFile -Force
         }
         Write-Host "Config and data removed."
     }

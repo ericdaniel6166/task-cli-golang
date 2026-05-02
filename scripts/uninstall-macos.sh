@@ -2,8 +2,8 @@
 set -euo pipefail
 
 BINARY_NAME="task-cli"
-CONFIG_DIR="$HOME/.config/task-cli"
-DATA_DIR="$HOME/.local/share/task-cli"
+DATA_DIR="${TASK_CLI_DATA_DIR:-$HOME/.task-cli}"
+CONFIG_FILE="$HOME/.task-cli.yaml"
 
 # Find binary location
 find_binary() {
@@ -31,7 +31,8 @@ main() {
 
   if [[ "$remove_data" == "--purge" ]]; then
     echo "Removing config and data..."
-    rm -rf "$CONFIG_DIR" "$DATA_DIR"
+    rm -rf "$DATA_DIR"
+    rm -f "$CONFIG_FILE"
     echo "Config and data removed."
   else
     echo "Config/data preserved. Use --purge to remove."
