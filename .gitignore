@@ -525,3 +525,12 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/go,intellij+iml,intellij+all,vs
+
+# Custom - eric6166
+
+.claude/*
+!plans/templates/
+plans
+eric6166/
+docs/journals/
+task-cli
