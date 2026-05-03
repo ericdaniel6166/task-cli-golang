@@ -12,6 +12,26 @@ error()   { echo "[ERROR] $1"; exit 1; }
 [ -n "$HOME" ] || error "HOME not set"
 command -v sudo >/dev/null 2>&1 || error "sudo not available"
 
+# Resolve real user's home directory (handles sudo, cross-platform)
+if [ -n "$SUDO_USER" ]; then
+    if command -v getent >/dev/null 2>&1; then
+        # Linux
+        REAL_HOME=$(getent passwd "$SUDO_USER" 2>/dev/null | cut -d: -f6)
+        [ -n "$REAL_HOME" ] || error "User '$SUDO_USER' not found in passwd database"
+    elif [ "$(uname)" = "Darwin" ]; then
+        # macOS
+        REAL_HOME=$(dscl . -read /Users/"$SUDO_USER" NFSHomeDirectory 2>/dev/null | awk '{print $2}')
+        [ -n "$REAL_HOME" ] || error "User '$SUDO_USER' not found in directory service"
+    else
+        # Fallback for other UNIX
+        REAL_HOME=$(eval echo ~"$SUDO_USER" 2>/dev/null)
+        [ -n "$REAL_HOME" ] || error "Could not resolve home directory for user '$SUDO_USER'"
+    fi
+else
+    REAL_HOME="$HOME"
+fi
+[ -n "$REAL_HOME" ] || error "Could not determine user home directory"
+
 # Remove binary
 info "Removing /usr/local/bin/task-cli..."
 if [ -f /usr/local/bin/task-cli ]; then
@@ -39,18 +59,18 @@ if [ $plugin_count -eq 0 ]; then
 fi
 
 # Remove data directory
-info "Removing ~/.task-cli/..."
-if [ -d "$HOME/.task-cli" ]; then
-    rm -rf "$HOME/.task-cli"
+info "Removing $REAL_HOME/.task-cli/..."
+if [ -d "$REAL_HOME/.task-cli" ]; then
+    rm -rf "$REAL_HOME/.task-cli"
     success "Data directory removed"
 else
     warn "Data directory not found"
 fi
 
 # Remove config file
-info "Removing ~/.task-cli.yaml..."
-if [ -f "$HOME/.task-cli.yaml" ]; then
-    rm -f "$HOME/.task-cli.yaml"
+info "Removing $REAL_HOME/.task-cli.yaml..."
+if [ -f "$REAL_HOME/.task-cli.yaml" ]; then
+    rm -f "$REAL_HOME/.task-cli.yaml"
     success "Config file removed"
 else
     warn "Config file not found"
